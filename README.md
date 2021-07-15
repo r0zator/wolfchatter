@@ -23,7 +23,7 @@ npm run lint --fix
 ```
 
 ### Testing the app with multiple 'users' - real-time
-Open 2 separate browsers (or a browser and second tab in incognito) and go to http://localhost:8080/. You can chat now with your other self :D
+Run the app, open 2 separate browsers (or a browser and second tab in incognito) and go to http://localhost:8080/. You can chat now with your other self :D
 
 ### Color legend
 ```
