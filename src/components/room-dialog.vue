@@ -61,7 +61,8 @@
                                class="form-control" required>
                     </span>
                     <span class="col-4">
-                        <button class="btn btn-outline-primary w-100"
+                        <button class="btn btn-primary w-100"
+                                :disabled="!username || !message"
                                 @click="submit">
                             Submit
                         </button>
@@ -108,11 +109,10 @@ export default {
     },
     watch: {
         room: {
+            immediate: true,
             async handler(val) {
                 this.message = null;
-                if (val) {
-                    await this.getAllMessages(val.key);
-                }
+                if (val) await this.getAllMessages(val.key);
             },
         },
     },
@@ -127,7 +127,12 @@ export default {
                 username: this.username,
                 message: this.message,
                 date: messageFormattedDate };
-            const message = { messages: [...this.currentMessages, messageObject], roomId: this.room.key };
+
+            const message = {
+                messages: [...this.currentMessages, messageObject],
+                roomId: this.room.key,
+            };
+
             await this.addMessage(message);
             this.$refs.container.scrollTop = this.$refs.container.scrollHeight;
             this.message = null;

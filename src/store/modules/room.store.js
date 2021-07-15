@@ -6,26 +6,28 @@ import { firebase } from '../../config/firebase';
 export default {
     namespaced: true,
     state: {
-        currentRoom: null,
+        currentRoom: {},
         listOfRooms: [],
     },
     getters: {
-        currentRoom(state) {
-            return state.currentRoom;
+        // current room for current user inside the current session
+        // to overcome the possibility to override the currentRoom when more than 1 user is on the app
+        currentRoom(state, getters, rootState) {
+            return state.currentRoom[rootState.user.currentUser];
         },
         listOfRooms(state) {
             return state.listOfRooms;
         },
     },
     mutations: {
-        setCurrentRoom(state, room) {
-            Vue.set(state, 'currentRoom', room);
+        setCurrentRoom(state, { room, user }) {
+            Vue.set(state.currentRoom, user, room);
         },
         setRooms(state, rooms) {
             Vue.set(state, 'listOfRooms', rooms);
         },
-        removeCurrentRoom(state) {
-            Vue.set(state, 'currentRoom', null);
+        removeCurrentRoom(state, user) {
+            Vue.set(state.currentRoom, user, null);
         },
         removeRoomFromList(state, room) {
             const rooms = state.listOfRooms.filter((rm) => rm.key !== room.key);
@@ -41,15 +43,19 @@ export default {
         },
     },
     actions: {
-        async addRoom({ commit }, payload) {
+        async addRoom({ commit, rootState }, payload) {
             const key = await service.addRoom(payload);
-            commit('setCurrentRoom', { ...payload, key });
+            commit('setCurrentRoom', { room: { ...payload, key },
+                user: rootState.user.currentUser });
         },
-        async removeRoom({ commit }, roomId) {
+        async removeRoom({ commit, rootState }, roomId) {
             await service.removeRoom(roomId);
-            commit('removeCurrentRoom');
+            commit('removeCurrentRoom', rootState.user.currentUser);
         },
-        async getAllRooms({ commit }) {
+        setCurrentRoom({ commit, rootState }, room) {
+            commit('setCurrentRoom', { room, user: rootState.user.currentUser });
+        },
+        async getAllRooms({ commit, state, rootState }) {
             const rooms = await service.getAllRooms();
             commit('setRooms', rooms);
 
@@ -59,6 +65,12 @@ export default {
 
             firebase.database().ref('rooms').on('child_removed', (data) => {
                 commit('removeRoomFromList', data.val());
+                // current room that is opened
+                const currentRoom = state.currentRoom[rootState.user.currentUser];
+                // if I have same room opened as another user - and that user deletes the room => reset my view also
+                if (currentRoom && data.val().key === currentRoom.key) {
+                    commit('removeCurrentRoom', rootState.user.currentUser);
+                }
             });
         },
     },

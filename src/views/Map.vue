@@ -23,11 +23,11 @@
                 <l-marker v-for="(roomItem, index) in listOfRooms" :key="index"
                           :lat-lng="{lat: roomItem.lat, lng: roomItem.lng}"
                           :icon="roomItem.userId === currentUser ? iconBlue : iconRed"
-                          @click="roomAction(roomItem)" />
+                          @click="setCurrentRoom(roomItem)" />
             </span>
         </l-map>
         <div class="dialog d-flex justify-content-end p-3">
-            <room-dialog :room="room" @removeRoom="removeRoomAction(room)" />
+            <room-dialog :room="currentRoom" @removeRoom="removeRoom(currentRoom.key)" />
         </div>
     </div>
 </template>
@@ -46,7 +46,7 @@ export default {
             center: [46.7712, 23.6236],
             zoom: 5,
             url: 'http://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.png',
-            room: null,
+
             // other rooms/markers
             iconRed: icon({
                 // eslint-disable-next-line global-require
@@ -54,6 +54,7 @@ export default {
                 iconSize: [53, 53],
                 iconAnchor: [16, 37],
             }),
+
             // my rooms/markers
             iconBlue: icon({
                 // eslint-disable-next-line global-require
@@ -78,20 +79,13 @@ export default {
             getAllRooms: 'room/getAllRooms',
             addRoom: 'room/addRoom',
             removeRoom: 'room/removeRoom',
+            setCurrentRoom: 'room/setCurrentRoom',
         }),
-        async roomAction(room) {
-            this.room = room;
-        },
         async addRoomAction(event) {
             await this.addRoom({
                 ...event.latlng,
                 userId: this.currentUser,
             });
-            this.room = this.currentRoom;
-        },
-        async removeRoomAction(roomItem) {
-            await this.removeRoom(roomItem.key);
-            this.room = null;
         },
     },
 };
