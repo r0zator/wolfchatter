@@ -33,4 +33,4 @@ Blue - your chat-room(s)
 ```
 
 ### Known 'critical' issues
-Not having a login. Basically I am generating an id based on which I am creating a 'current' user that's browsing. After vuex store is emptied, when you will open again the browser - you will get another id and you will probably see markers/chat-rooms that are not yours (but basically the rooms are now orphaned, even if before, at some point - they are yours)
+Not having a login. Basically I am generating an id based on which I am creating a 'current' user that's browsing. After vuex store is emptied, when you will open again the browser - you will get another id and you will probably see markers/chat-rooms that are not yours (basically the rooms are now orphaned, even if before, at some point - they were yours)
