@@ -1,3 +1,8 @@
+### NOTE
+```
+If you tested the app in 15 July, before 20PM, please clean your local storage cache (dev console). Thanks :D
+```
+
 ## Project setup
 ```
 npm install
