@@ -38,7 +38,7 @@
                             <span :class="`${item.userId === currentUser
                                 ? 'mg-text-user'
                                 : 'mg-text-joiner'}`">
-                                [{{ item.username }}]
+                                {{ getUserHeader (item) }}
                             </span>
                             <p v-if="item.userId !== currentUser">
                                 : {{ item.message }}
@@ -80,6 +80,7 @@
 <script>
 
 import { mapActions, mapGetters } from 'vuex';
+import moment from 'moment';
 
 export default {
     props: {
@@ -121,9 +122,11 @@ export default {
             getAllMessages: 'message/getAllMessages',
         }),
         async submit() {
+            const messageFormattedDate = moment().format('DD/MM/YYYY');
             const messageObject = { userId: this.currentUser,
                 username: this.username,
-                message: this.message };
+                message: this.message,
+                date: messageFormattedDate };
             const message = { messages: [...this.currentMessages, messageObject], roomId: this.room.key };
             await this.addMessage(message);
             this.$refs.container.scrollTop = this.$refs.container.scrollHeight;
@@ -131,6 +134,11 @@ export default {
         },
         async remove() {
             this.$emit('removeRoom');
+        },
+        getUserHeader(message) {
+            return message.userId === this.currentUser
+                ? `(${message.date}) [${message.username}]`
+                : `[${message.username}] (${message.date})`;
         },
     },
 };
