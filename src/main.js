@@ -1,6 +1,3 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable import/extensions */
-/* eslint-disable import/no-unresolved */
 import Vue from 'vue';
 import VueObserveVisibility from 'vue-observe-visibility';
 import Vuelidate from 'vuelidate';
